@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\BallBehavior.cs" />
+     <Compile Include="Assets\PlayerBehavior.cs" />
      <Compile Include="Assets\WorldBehavior.cs" />
  <Reference Include="UnityEngine.CoreModule">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2017.4.31f1/Editor/Data/Managed/UnityEngine/UnityEngine.CoreModule.dll</HintPath>

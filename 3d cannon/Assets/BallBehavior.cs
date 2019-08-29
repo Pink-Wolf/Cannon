@@ -8,7 +8,7 @@ public class BallBehavior : MonoBehaviour
     public GameObject worldManager;
     WorldBehavior worldManagerScript;
     //Forces
-    Vector3 forces = Vector3.zero;
+    public Vector3 forces = Vector3.zero;
     Vector3 speed = Vector3.zero;
 
     private void Start()
@@ -26,12 +26,14 @@ public class BallBehavior : MonoBehaviour
         }
         //Apply forces
         speed += forces;
+        speed *= 0.99f;
         forces = Vector3.zero;
         //Not below ground
         if (transform.position.y+speed.y*Time.deltaTime < transform.localScale.y / 2)
         {
             speed -= speed.y * Vector3.up;
             transform.position = new Vector3(transform.position.x, transform.localScale.y / 2, transform.position.z);
+            speed *= 1 - Time.deltaTime;
         }
         //Apply speed
         transform.position += speed * Time.deltaTime;
