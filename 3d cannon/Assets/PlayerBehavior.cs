@@ -7,7 +7,7 @@ public class PlayerBehavior : MonoBehaviour {
     public float moveSpeed = 5;
     public GameObject ballObject;
     public float shootForce = 10;
-    
+    public GameObject ballManager;
 
     private void Start()
     {
@@ -52,6 +52,7 @@ public class PlayerBehavior : MonoBehaviour {
             GameObject obj = Instantiate(ballObject);
             obj.transform.position = transform.position;
             obj.GetComponent<BallBehavior>().forces += shootForce * transform.forward;
+            obj.transform.parent = ballManager.transform;
         }
     }
 }
