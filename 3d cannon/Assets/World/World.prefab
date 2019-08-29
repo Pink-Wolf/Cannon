@@ -53,5 +53,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldForces:
   - {x: 0, y: -10, z: 0}
-  spawnTimer: 1
-  ballObject: {fileID: 0}

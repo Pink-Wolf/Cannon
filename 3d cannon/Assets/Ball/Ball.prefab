@@ -56,7 +56,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: cfbc7c5adcb12f0499bc249ac0416ed5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -96,3 +96,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldManager: {fileID: 1293658404002998, guid: cf282798fc43b244fa560a3eca501b78,
     type: 2}
+  forces: {x: 0, y: 0, z: 0}
+  speed: {x: 0, y: 0, z: 0}

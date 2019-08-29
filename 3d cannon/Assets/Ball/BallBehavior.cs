@@ -31,19 +31,21 @@ public class BallBehavior : MonoBehaviour
         //Hitting ground
         if (transform.position.y+speed.y*Time.deltaTime < transform.localScale.y / 2)
         {
-            speed -= speed.y * Vector3.up;
+            speed -= Mathf.Min(speed.y,0) * Vector3.up;
             transform.position = new Vector3(transform.position.x, transform.localScale.y / 2, transform.position.z);
             speed *= 1 - Time.deltaTime;
         }
         //Colliding
         foreach(Transform child in gameObject.transform.parent)
         {
-            Vector3 deltaVector = child.transform.position - transform.position - speed * Time.deltaTime;
-            if (deltaVector.magnitude < 1)
+            if (transform != child)
             {
-                Vector3 normalForce = new Vector3(deltaVector.normalized.x * speed.x, deltaVector.normalized.y * speed.y, deltaVector.normalized.z * speed.z);
-                speed -= normalForce;
-                child.GetComponent<BallBehavior>().speed += normalForce;
+                Vector3 deltaVector = child.transform.position - transform.position - speed * Time.deltaTime;
+                if (deltaVector.magnitude < 1)
+                {
+                    speed -= deltaVector * speed.magnitude;
+                    child.GetComponent<BallBehavior>().speed += deltaVector * speed.magnitude;
+                }
             }
         }
         //Apply speed
