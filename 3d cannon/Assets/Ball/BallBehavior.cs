@@ -10,6 +10,8 @@ public class BallBehavior : MonoBehaviour
     //Forces
     public Vector3 forces = Vector3.zero;
     public Vector3 speed = Vector3.zero;
+    //Objects
+    public float mass = Mathf.PI * 4 / 3;
 
     private void Start()
     {
@@ -22,10 +24,10 @@ public class BallBehavior : MonoBehaviour
         //Apply world forces
         foreach (Vector3 vector3 in worldManagerScript.worldForces)
         {
-            forces += vector3 * Time.deltaTime;
+            forces += vector3 * Time.deltaTime * mass;
         }
         //Apply forces
-        speed += forces;
+        speed += forces / mass;
         speed *= 0.99f;
         forces = Vector3.zero;
         //Hitting ground
@@ -44,7 +46,7 @@ public class BallBehavior : MonoBehaviour
                 Vector3 deltaVector = child.transform.position - transform.position - speed * Time.deltaTime;
                 if (deltaVector.magnitude < radiusSum)
                 {
-                    speed -= deltaVector * speed.magnitude;
+                    speed -= deltaVector * speed.magnitude / mass;
                     child.GetComponent<BallBehavior>().forces += deltaVector.normalized * speed.magnitude;
                 }
             }

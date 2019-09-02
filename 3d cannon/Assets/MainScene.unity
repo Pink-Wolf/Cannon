@@ -489,7 +489,7 @@ MonoBehaviour:
   mouseSensitivity: 0.1
   moveSpeed: 10
   ballObject: {fileID: 1194573794201006, guid: 8f7ab3b69fc324a4c850d759a2d6f38f, type: 2}
-  shootForce: 10
+  shootForce: 150
   ballManager: {fileID: 491109911}
   cameraRoot: {fileID: 118192364}
   cannonBallSize: 1
