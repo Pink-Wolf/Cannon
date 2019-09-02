@@ -9,14 +9,18 @@ public class CannonBehavior : MonoBehaviour {
     public float shootForce = 10;
     public GameObject ballManager;
     public GameObject cameraRoot;
+    [Range(0,1)]
+    public float cannonBallSize = 1;
 
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
     }
 	void Update () {
+        //Transform size of ball
+        cannonBallSize += Input.mouseScrollDelta.y / 10;
         //Rotate
-        transform.Rotate(new Vector3(Input.GetAxis("Horizontal") * -mouseSensitivity, Input.GetAxis("Vertical") * mouseSensitivity / 2, 0));
+        transform.Rotate(new Vector3(Input.GetAxis("Horizontal") * mouseSensitivity, Input.GetAxis("Vertical") * mouseSensitivity / 2, 0));
 
         if (transform.eulerAngles.x < 280) transform.Rotate(Vector3.right * (280 - transform.eulerAngles.x));
         if (transform.eulerAngles.x > 345) transform.Rotate(Vector3.right * (345 - transform.eulerAngles.x));
@@ -29,6 +33,7 @@ public class CannonBehavior : MonoBehaviour {
         {
             GameObject obj = Instantiate(ballObject);
             obj.transform.position = transform.position + transform.up * transform.localScale.y * 2;
+            obj.transform.localScale = Vector3.one * cannonBallSize;
             obj.GetComponent<BallBehavior>().forces += shootForce * transform.up;
             obj.transform.parent = ballManager.transform;
         }

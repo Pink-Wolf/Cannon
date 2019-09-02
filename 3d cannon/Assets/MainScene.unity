@@ -492,6 +492,7 @@ MonoBehaviour:
   shootForce: 10
   ballManager: {fileID: 491109911}
   cameraRoot: {fileID: 118192364}
+  cannonBallSize: 1
 --- !u!4 &821019014
 Transform:
   m_ObjectHideFlags: 0

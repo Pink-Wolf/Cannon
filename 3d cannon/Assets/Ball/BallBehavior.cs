@@ -40,11 +40,12 @@ public class BallBehavior : MonoBehaviour
         {
             if (transform != child)
             {
+                float radiusSum = (transform.localScale.x + child.localScale.x) / 2;
                 Vector3 deltaVector = child.transform.position - transform.position - speed * Time.deltaTime;
-                if (deltaVector.magnitude < 1)
+                if (deltaVector.magnitude < radiusSum)
                 {
                     speed -= deltaVector * speed.magnitude;
-                    child.GetComponent<BallBehavior>().speed += deltaVector * speed.magnitude;
+                    child.GetComponent<BallBehavior>().forces += deltaVector.normalized * speed.magnitude;
                 }
             }
         }
