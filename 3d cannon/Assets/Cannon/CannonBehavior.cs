@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class CannonBehavior : MonoBehaviour {
     public float mouseSensitivity = 0.1f;
+    public float rotationSpeed = 0.5f;
     public float moveSpeed = 5;
     public GameObject ballObject;
     public float shootForce = 10;
     public GameObject ballManager;
-    public GameObject cameraRoot;
+    public GameObject tankObject;
+    public GameObject cameraObject;
+    public GameObject cannonObject;
     public float cannonBallSize = 1;
 
     private void Start()
@@ -18,27 +21,52 @@ public class CannonBehavior : MonoBehaviour {
 	void Update () {
         //Transform size of ball
         cannonBallSize += Input.mouseScrollDelta.y / 10;
-        //Rotate
-        Vector3 v3 = new Vector3(Input.GetAxis("Horizontal") * mouseSensitivity,
-            Input.GetAxis("Vertical") * mouseSensitivity / 2, 0);
+        //Rotate cannon
+        float ry = Input.GetAxis("Horizontal") * mouseSensitivity;
+        float rx = Input.GetAxis("Vertical") * mouseSensitivity;
 
-        if (v3.x + transform.eulerAngles.x > 355) v3.x = 355 - transform.eulerAngles.x;
-        if (v3.x + transform.eulerAngles.x < 280) v3.x = 280 - transform.eulerAngles.x;
+        if (ry + cannonObject.transform.eulerAngles.x > 355) ry = 355 - cannonObject.transform.eulerAngles.x;
+        if (ry + cannonObject.transform.eulerAngles.x < 280) ry = 280 - cannonObject.transform.eulerAngles.x;
 
-        transform.Rotate(v3);
-        
-        transform.Rotate(Vector3.forward * -transform.eulerAngles.z);
+        cannonObject.transform.Rotate(ry * Vector3.right);
+        cannonObject.transform.Rotate(rx * Vector3.up, Space.World);
+        cameraObject.transform.Rotate((cannonObject.transform.eulerAngles.y - cameraObject.transform.eulerAngles.y) * Vector3.up, Space.World);
 
-        cameraRoot.transform.Rotate(Vector3.up * (transform.eulerAngles.y - cameraRoot.transform.eulerAngles.y));
+        cannonObject.transform.Rotate(Vector3.forward * -cannonObject.transform.eulerAngles.z);
+        //Find tank movement
+        float spd = 0;
+        if (Input.GetKey(KeyCode.W))
+        {
+            spd += moveSpeed * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            spd -= moveSpeed * Time.deltaTime;
+        }
+        //Rotate tank
+        if (Input.GetKey(KeyCode.A))
+        {
+            tankObject.transform.Rotate(-rotationSpeed * Vector3.up * Mathf.Sign(spd), Space.World);
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            tankObject.transform.Rotate(rotationSpeed * Vector3.up * Mathf.Sign(spd), Space.World);
+        }
+        //Apply movement
+        tankObject.transform.position += tankObject.transform.forward * spd;
         //Shoot ball
         if (Input.GetMouseButtonDown(0))
         {
             GameObject obj = Instantiate(ballObject);
-            obj.transform.position = transform.position + transform.up * transform.localScale.y * 2;
+            obj.transform.position = cannonObject.transform.position + cannonObject.transform.up * transform.localScale.y * 2;
             obj.transform.localScale = Vector3.one * cannonBallSize;
-            obj.GetComponent<BallBehavior>().mass *= 8 * cannonBallSize * cannonBallSize * cannonBallSize;
-            obj.GetComponent<BallBehavior>().forces += shootForce * transform.up;
             obj.transform.parent = ballManager.transform;
+
+            BallBehavior objBehavior = obj.GetComponent<BallBehavior>();
+            objBehavior.mass *= 8 * cannonBallSize * cannonBallSize * cannonBallSize;
+            objBehavior.speed += spd * tankObject.transform.forward;
+            objBehavior.forces += shootForce * cannonObject.transform.up;
+            objBehavior.tankObject = gameObject;
         }
     }
 }

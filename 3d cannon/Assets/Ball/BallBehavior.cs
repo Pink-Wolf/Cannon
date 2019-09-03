@@ -7,10 +7,12 @@ public class BallBehavior : MonoBehaviour
     //World
     public GameObject worldManager;
     WorldBehavior worldManagerScript;
+    [HideInInspector]
+    public GameObject tankObject;
     //Forces
     public Vector3 forces = Vector3.zero;
     public Vector3 speed = Vector3.zero;
-    //Objects
+    //Object
     public float mass = Mathf.PI * 4 / 3;
 
     private void Start()
