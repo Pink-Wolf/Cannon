@@ -8,7 +8,11 @@ public class BallBehavior : MonoBehaviour
     public GameObject worldManager;
     WorldBehavior worldManagerScript;
     [HideInInspector]
-    public GameObject tankObject;
+    public GameObject tankBase;
+    [HideInInspector]
+    public GameObject tankObj;
+    [HideInInspector]
+    public GameObject tankHead;
     //Forces
     public Vector3 forces = Vector3.zero;
     public Vector3 speed = Vector3.zero;
@@ -52,6 +56,27 @@ public class BallBehavior : MonoBehaviour
                     child.GetComponent<BallBehavior>().forces += deltaVector.normalized * speed.magnitude * mass;
                 }
             }
+        }
+        //Colliding with tank head
+        Vector3 deltaPos = transform.position - tankHead.transform.position;
+        if (deltaPos.magnitude < (tankHead.transform.localScale.x + transform.localScale.x)/2)
+        {
+            speed += deltaPos.normalized * speed.magnitude;
+            speed += tankObj.GetComponent<CannonBehavior>().speed;
+        }
+        //Colliding with tank base
+        Vector3 maxPoint = tankBase.transform.position + tankBase.transform.localScale / 2;
+        Vector3 minPoint = tankBase.transform.position - tankBase.transform.localScale / 2;
+        Vector3 closestPoint = new Vector3(
+            Mathf.Min(maxPoint.x, Mathf.Max(minPoint.x, transform.position.x)),
+            Mathf.Min(maxPoint.y, Mathf.Max(minPoint.y, transform.position.y)),
+            Mathf.Min(maxPoint.z, Mathf.Max(minPoint.z, transform.position.z))
+            );
+        deltaPos = transform.position - closestPoint;
+        if (deltaPos.magnitude <= transform.localScale.x / 2)
+        {
+            speed += deltaPos.normalized * speed.magnitude;
+            if (Mathf.Abs(deltaPos.y) < transform.localScale.y * 0.45f) speed += tankObj.GetComponent<CannonBehavior>().speed;
         }
         //Apply speed
         transform.position += speed * Time.deltaTime;

@@ -12,7 +12,10 @@ public class CannonBehavior : MonoBehaviour {
     public GameObject tankObject;
     public GameObject cameraObject;
     public GameObject cannonObject;
+    public GameObject cannonPlate;
+    public GameObject tankHead;
     public float cannonBallSize = 1;
+    public Vector3 speed;
 
     private void Start()
     {
@@ -33,27 +36,28 @@ public class CannonBehavior : MonoBehaviour {
         cameraObject.transform.Rotate((cannonObject.transform.eulerAngles.y - cameraObject.transform.eulerAngles.y) * Vector3.up, Space.World);
 
         cannonObject.transform.Rotate(Vector3.forward * -cannonObject.transform.eulerAngles.z);
-        //Find tank movement
-        float spd = 0;
+
+
+        tankHead.transform.Rotate(rx * Vector3.up, Space.World);
+        //Move tank
+        speed = Vector3.zero;
         if (Input.GetKey(KeyCode.W))
         {
-            spd += moveSpeed * Time.deltaTime;
+            speed += tankHead.transform.forward * moveSpeed;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            spd -= moveSpeed * Time.deltaTime;
-        }
-        //Rotate tank
-        if (Input.GetKey(KeyCode.A))
-        {
-            tankObject.transform.Rotate(-rotationSpeed * Vector3.up * Mathf.Sign(spd), Space.World);
+            speed -= tankHead.transform.forward * moveSpeed;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            tankObject.transform.Rotate(rotationSpeed * Vector3.up * Mathf.Sign(spd), Space.World);
+            speed += tankHead.transform.right * moveSpeed;
         }
-        //Apply movement
-        tankObject.transform.position += tankObject.transform.forward * spd;
+        if (Input.GetKey(KeyCode.A))
+        {
+            speed -= tankHead.transform.right * moveSpeed;
+        }
+        tankObject.transform.position += speed * Time.deltaTime;
         //Shoot ball
         if (Input.GetMouseButtonDown(0))
         {
@@ -64,9 +68,11 @@ public class CannonBehavior : MonoBehaviour {
 
             BallBehavior objBehavior = obj.GetComponent<BallBehavior>();
             objBehavior.mass *= 8 * cannonBallSize * cannonBallSize * cannonBallSize;
-            objBehavior.speed += spd * tankObject.transform.forward;
+            objBehavior.speed += speed;
             objBehavior.forces += shootForce * cannonObject.transform.up;
-            objBehavior.tankObject = gameObject;
+            objBehavior.tankBase = cannonPlate;
+            objBehavior.tankObj = tankObject;
+            objBehavior.tankHead = tankHead;
         }
     }
 }
