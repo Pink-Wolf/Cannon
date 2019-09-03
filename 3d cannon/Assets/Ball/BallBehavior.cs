@@ -46,8 +46,8 @@ public class BallBehavior : MonoBehaviour
                 Vector3 deltaVector = child.transform.position - transform.position - speed * Time.deltaTime;
                 if (deltaVector.magnitude < radiusSum)
                 {
-                    speed -= deltaVector * speed.magnitude / mass;
-                    child.GetComponent<BallBehavior>().forces += deltaVector.normalized * speed.magnitude;
+                    speed -= deltaVector.normalized * speed.magnitude / mass;
+                    child.GetComponent<BallBehavior>().forces += deltaVector.normalized * speed.magnitude * mass;
                 }
             }
         }
