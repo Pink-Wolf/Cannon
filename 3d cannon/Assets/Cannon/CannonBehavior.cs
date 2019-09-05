@@ -43,6 +43,7 @@ public class CannonBehavior : MonoBehaviour {
 
 
         tankHead.transform.Rotate(rx * Vector3.up, Space.World);
+        cameraObject.transform.Rotate((cannonObject.transform.eulerAngles.x - cameraObject.transform.eulerAngles.x + 60) * Vector3.right);
         //Move tank
         speed = Vector3.zero;
         if (Input.GetKey(KeyCode.W))

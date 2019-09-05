@@ -39,24 +39,29 @@ public class BallBehavior : MonoBehaviour
         speed *= 0.99f;
         forces = Vector3.zero;
         //Not under ground
-        float xz = worldManagerScript.groundHeight[Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.z)];
-        float Xz = worldManagerScript.groundHeight[Mathf.CeilToInt(transform.position.x), Mathf.FloorToInt(transform.position.z)];
-        float xZ = worldManagerScript.groundHeight[Mathf.FloorToInt(transform.position.x), Mathf.CeilToInt(transform.position.z)];
-        float XZ = worldManagerScript.groundHeight[Mathf.CeilToInt(transform.position.x), Mathf.CeilToInt(transform.position.z)];
-        float x = transform.position.x % 1;
-        float z = transform.position.z % 1;
-        float y =
-            Mathf.Lerp(
+        float xz, Xz, xZ, XZ, x, z, y;
+        if ((transform.position.x >= 0) && (transform.position.x <= worldManagerScript.worldSize.x - 1) &&
+            (transform.position.z >= 0) && (transform.position.z <= worldManagerScript.worldSize.y - 1))
+        {
+            xz = worldManagerScript.groundHeight[Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.z)];
+            Xz = worldManagerScript.groundHeight[Mathf.CeilToInt(transform.position.x), Mathf.FloorToInt(transform.position.z)];
+            xZ = worldManagerScript.groundHeight[Mathf.FloorToInt(transform.position.x), Mathf.CeilToInt(transform.position.z)];
+            XZ = worldManagerScript.groundHeight[Mathf.CeilToInt(transform.position.x), Mathf.CeilToInt(transform.position.z)];
+            x = transform.position.x % 1;
+            z = transform.position.z % 1;
+            y =
                 Mathf.Lerp(
-                    xz,
-                    Xz,
-                    x),
-                Mathf.Lerp(
-                    xZ,
-                    XZ,
-                    x),
-                z);
-        transform.position = new Vector3(transform.position.x, Mathf.Max(y, transform.position.y), transform.position.z);
+                    Mathf.Lerp(
+                        xz,
+                        Xz,
+                        x),
+                    Mathf.Lerp(
+                        xZ,
+                        XZ,
+                        x),
+                    z);
+            transform.position = new Vector3(transform.position.x, Mathf.Max(y, transform.position.y), transform.position.z);
+        }
         //Hitting ground
         Vector3 sumNormal = Vector3.zero;
         Vector3 newPos = transform.position + speed * Time.deltaTime;
