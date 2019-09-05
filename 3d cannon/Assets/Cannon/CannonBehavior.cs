@@ -14,12 +14,16 @@ public class CannonBehavior : MonoBehaviour {
     public GameObject cannonObject;
     public GameObject cannonPlate;
     public GameObject tankHead;
+    public GameObject terrain; WorldBehavior terrainScript;
     public float cannonBallSize = 1;
     public Vector3 speed;
 
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        terrainScript = terrain.GetComponent<WorldBehavior>();
+
+        transform.position = new Vector3(terrainScript.worldSize.x * 0.5f, 0, terrainScript.worldSize.y * 0.5f);
     }
 	void Update () {
         //Transform size of ball
@@ -58,6 +62,31 @@ public class CannonBehavior : MonoBehaviour {
             speed -= tankHead.transform.right * moveSpeed;
         }
         tankObject.transform.position += speed * Time.deltaTime;
+
+        tankObject.transform.position = new Vector3(
+            Mathf.Max(cannonPlate.transform.localScale.x * 0.5f, Mathf.Min(terrainScript.worldSize.x - cannonPlate.transform.localScale.x * 0.5f - 1, tankObject.transform.position.x)),
+            tankObject.transform.position.y,
+            Mathf.Max(cannonPlate.transform.localScale.z * 0.5f, Mathf.Min(terrainScript.worldSize.y - cannonPlate.transform.localScale.z * 0.5f - 1, tankObject.transform.position.z)));
+        //Get height
+        float xz = terrainScript.groundHeight[Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.z)];
+        float Xz = terrainScript.groundHeight[Mathf.CeilToInt(transform.position.x), Mathf.FloorToInt(transform.position.z)];
+        float xZ = terrainScript.groundHeight[Mathf.FloorToInt(transform.position.x), Mathf.CeilToInt(transform.position.z)];
+        float XZ = terrainScript.groundHeight[Mathf.CeilToInt(transform.position.x), Mathf.CeilToInt(transform.position.z)];
+        float x = transform.position.x % 1;
+        float z = transform.position.z % 1;
+
+        tankObject.transform.position = new Vector3(tankObject.transform.position.x,
+            Mathf.Lerp(
+                Mathf.Lerp(
+                    xz,
+                    Xz,
+                    x),
+                Mathf.Lerp(
+                    xZ,
+                    XZ,
+                    x),
+                z)
+            , tankObject.transform.position.z);
         //Shoot ball
         if (Input.GetMouseButtonDown(0))
         {
@@ -73,6 +102,8 @@ public class CannonBehavior : MonoBehaviour {
             objBehavior.tankBase = cannonPlate;
             objBehavior.tankObj = tankObject;
             objBehavior.tankHead = tankHead;
+            objBehavior.worldManager = terrain;
+            objBehavior.OnCreate();
         }
     }
 }

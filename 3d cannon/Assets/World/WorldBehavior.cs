@@ -5,17 +5,63 @@ using UnityEngine;
 public class WorldBehavior : MonoBehaviour
 {
     public Vector3[] worldForces = new Vector3[] { new Vector3(0, -10, 0) };
-    /*public float spawnTimer = 1;
-    float nextSpawnTime = 0;
-    public GameObject ballObject;
 
-    public void Update()
+    //Settings
+    public Vector2Int worldSize = new Vector2Int(16, 16);
+    public float height = 8;
+    public Vector2[] roughness_worth;
+    public Material groundMaterial;
+    //Values
+    [HideInInspector]
+    public float[,] groundHeight;
+
+    void Start()
     {
-        if (Time.time >= nextSpawnTime)
+        groundHeight = new float[worldSize.x, worldSize.y];
+        //Get vertices and triangles
+        Vector3[] vertices = new Vector3[worldSize.x * worldSize.y];
+        int[] triangles = new int[(worldSize.x - 1) * (worldSize.y - 1) * 6];
+
+        int iv = 0;
+        int it = 0;
+        int itv = 0;
+        for(int iz = 0; iz < worldSize.y; iz++)
         {
-            nextSpawnTime = Time.time + spawnTimer;
-            GameObject obj = Instantiate(ballObject);
-            obj.transform.position = new Vector3(Random.Range(-5, 5), 5, Random.Range(-5, 5));
+            for(int ix = 0; ix < worldSize.x; ix++)
+            {
+                vertices[iv] = new Vector3(ix, 0.5f, iz);
+                for(int i = 0; i < roughness_worth.Length; i++)
+                {
+                    vertices[iv].y = Mathf.Lerp(vertices[iv].y,
+                        Mathf.PerlinNoise(ix / 100f * roughness_worth[i].x, iz / 100f * roughness_worth[i].x)
+                        , roughness_worth[i].y);
+                }
+                vertices[iv].y *= height;
+                groundHeight[ix, iz] = vertices[iv].y;
+
+                if ((iz > 0) && (ix > 0))
+                {
+                    triangles[it * 6 + 0] = itv;
+                    triangles[it * 6 + 1] = iv - 1;
+                    triangles[it * 6 + 2] = itv + 1;
+                    triangles[it * 6 + 3] = iv - 1;
+                    triangles[it * 6 + 4] = iv;
+                    triangles[it * 6 + 5] = itv + 1;
+
+                    it++;
+                }
+                if (it > 0) itv++;
+                iv++;
+            }
         }
-    }*/
+        //Apply mesh
+        MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
+        MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
+        meshRenderer.material = groundMaterial;
+        Mesh mesh = new Mesh();
+        meshFilter.mesh = mesh;
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.RecalculateNormals();
+    }
 }

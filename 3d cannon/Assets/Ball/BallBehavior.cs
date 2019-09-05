@@ -14,12 +14,14 @@ public class BallBehavior : MonoBehaviour
     [HideInInspector]
     public GameObject tankHead;
     //Forces
+    [HideInInspector]
     public Vector3 forces = Vector3.zero;
+    [HideInInspector]
     public Vector3 speed = Vector3.zero;
     //Object
     public float mass = Mathf.PI * 4 / 3;
 
-    private void Start()
+    public void OnCreate()
     {
         //Setup variables
         worldManagerScript = worldManager.GetComponent<WorldBehavior>();
@@ -36,13 +38,120 @@ public class BallBehavior : MonoBehaviour
         speed += forces / mass;
         speed *= 0.99f;
         forces = Vector3.zero;
+        //Not under ground
+        float xz = worldManagerScript.groundHeight[Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.z)];
+        float Xz = worldManagerScript.groundHeight[Mathf.CeilToInt(transform.position.x), Mathf.FloorToInt(transform.position.z)];
+        float xZ = worldManagerScript.groundHeight[Mathf.FloorToInt(transform.position.x), Mathf.CeilToInt(transform.position.z)];
+        float XZ = worldManagerScript.groundHeight[Mathf.CeilToInt(transform.position.x), Mathf.CeilToInt(transform.position.z)];
+        float x = transform.position.x % 1;
+        float z = transform.position.z % 1;
+        float y =
+            Mathf.Lerp(
+                Mathf.Lerp(
+                    xz,
+                    Xz,
+                    x),
+                Mathf.Lerp(
+                    xZ,
+                    XZ,
+                    x),
+                z);
+        transform.position = new Vector3(transform.position.x, Mathf.Max(y, transform.position.y), transform.position.z);
         //Hitting ground
-        if (transform.position.y+speed.y*Time.deltaTime < transform.localScale.y / 2)
+        Vector3 sumNormal = Vector3.zero;
+        Vector3 newPos = transform.position + speed * Time.deltaTime;
+        for (int ix = Mathf.FloorToInt(newPos.x-transform.localScale.x*0.5f); ix < Mathf.CeilToInt(transform.position.x + transform.localScale.x * 0.5f); ix++)
         {
-            speed -= Mathf.Min(speed.y,0) * Vector3.up;
-            transform.position = new Vector3(transform.position.x, transform.localScale.y / 2, transform.position.z);
-            speed *= 1 - Time.deltaTime;
+            for (int iz = Mathf.FloorToInt(newPos.z - transform.localScale.z * 0.5f); iz < Mathf.CeilToInt(transform.position.z + transform.localScale.z * 0.5f); iz++)
+            {
+                if ((ix > -1) && (ix < worldManagerScript.worldSize.x - 1) && (iz > -1) && (iz < worldManagerScript.worldSize.y - 1))
+                {
+                    Vector3 closestTerrainPoint = new Vector3(
+                        Mathf.Max(ix, Mathf.Min(ix + 1, newPos.x)),
+                        0,
+                        Mathf.Max(iz, Mathf.Min(iz + 1, newPos.z)));
+
+
+                    xz = worldManagerScript.groundHeight[ix, iz];
+                    Xz = worldManagerScript.groundHeight[ix + 1, iz];
+                    xZ = worldManagerScript.groundHeight[ix, iz + 1];
+                    XZ = worldManagerScript.groundHeight[ix + 1, iz + 1];
+                    x = closestTerrainPoint.x - ix;
+                    z = closestTerrainPoint.z - iz;
+                    closestTerrainPoint.y =
+                        Mathf.Lerp(
+                            Mathf.Lerp(
+                                xz,
+                                Xz,
+                                x),
+                            Mathf.Lerp(
+                                xZ,
+                                XZ,
+                                x),
+                            z);
+
+                    Vector3 deltaVector = newPos - closestTerrainPoint;
+                    if (deltaVector.magnitude <= transform.localScale.x / 2)
+                    {
+                        Vector3 normalxz = new Vector3(
+                            xz-Xz,
+                            1,
+                            2 * xz - xZ - Xz
+                            ).normalized;
+                        Vector3 normalXz = new Vector3(
+                            (xz-Xz),
+                            1,
+                            2 * Xz - XZ - xz
+                            ).normalized;
+                        Vector3 normalxZ = new Vector3(
+                            xZ-XZ,
+                            1,
+                            (XZ+xz-2*xZ)
+                            ).normalized;
+                        Vector3 normalXZ = new Vector3(
+                            (xZ-XZ),
+                            1,
+                            (xZ+Xz-2*XZ)
+                            ).normalized;
+
+                        Vector3 normal = new Vector3(
+                            Mathf.Lerp(
+                                Mathf.Lerp(
+                                    normalxz.x,
+                                    normalXz.x,
+                                    x),
+                                Mathf.Lerp(
+                                    normalxZ.x,
+                                    normalXZ.x,
+                                    x),
+                                z),
+                            Mathf.Lerp(
+                                Mathf.Lerp(
+                                    normalxz.y,
+                                    normalXz.y,
+                                    x),
+                                Mathf.Lerp(
+                                    normalxZ.y,
+                                    normalXZ.y,
+                                    x),
+                                z),
+                            Mathf.Lerp(
+                                Mathf.Lerp(
+                                    normalxz.z,
+                                    normalXz.z,
+                                    x),
+                                Mathf.Lerp(
+                                    normalxZ.z,
+                                    normalXZ.z,
+                                    x),
+                                z)
+                            ).normalized;
+                        sumNormal += normal;
+                    }
+                }
+            }
         }
+        speed += sumNormal.normalized * speed.magnitude;
         //Colliding
         foreach(Transform child in gameObject.transform.parent)
         {
