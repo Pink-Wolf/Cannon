@@ -194,5 +194,7 @@ public class BallBehavior : MonoBehaviour
         }
         //Apply speed
         transform.position += speed * Time.deltaTime;
+        //Check if so low, we can just delete it
+        if (transform.position.y < -16) Destroy(gameObject);
     }
 }

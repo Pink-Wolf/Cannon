@@ -14,6 +14,8 @@ public class CannonBehavior : MonoBehaviour {
     public GameObject cannonObject;
     public GameObject cannonPlate;
     public GameObject tankHead;
+    public GameObject visualCannon;
+    public GameObject ballShowcase;
     public GameObject terrain; WorldBehavior terrainScript;
     public float cannonBallSize = 1;
     public Vector3 speed;
@@ -27,7 +29,9 @@ public class CannonBehavior : MonoBehaviour {
     }
 	void Update () {
         //Transform size of ball
-        cannonBallSize += Input.mouseScrollDelta.y / 10;
+        cannonBallSize += Input.mouseScrollDelta.y / 10f;
+        if (cannonBallSize < 0.1f) cannonBallSize = 0.1f;
+        ballShowcase.transform.localScale = Vector3.one * cannonBallSize;
         //Rotate cannon
         float ry = Input.GetAxis("Horizontal") * mouseSensitivity;
         float rx = Input.GetAxis("Vertical") * mouseSensitivity;
@@ -92,7 +96,7 @@ public class CannonBehavior : MonoBehaviour {
         if (Input.GetMouseButtonDown(0))
         {
             GameObject obj = Instantiate(ballObject);
-            obj.transform.position = cannonObject.transform.position + cannonObject.transform.up * transform.localScale.y * 2;
+            obj.transform.position = tankHead.transform.position + cannonObject.transform.up * (2 + cannonBallSize / 2f);
             obj.transform.localScale = Vector3.one * cannonBallSize;
             obj.transform.parent = ballManager.transform;
 
