@@ -20,6 +20,9 @@ public class WorldBehavior : MonoBehaviour
         groundHeight = new float[worldSize.x, worldSize.y];
         //Get vertices and triangles
         Vector3[] vertices = new Vector3[worldSize.x * worldSize.y];
+        Vector2[] uvs = new Vector2[vertices.Length];
+        Texture2D texture = new Texture2D(worldSize.x, worldSize.y);
+        Color[] textureColor = new Color[vertices.Length];
         int[] triangles = new int[(worldSize.x - 1) * (worldSize.y - 1) * 6];
 
         int iv = 0;
@@ -29,6 +32,8 @@ public class WorldBehavior : MonoBehaviour
         {
             for(int ix = 0; ix < worldSize.x; ix++)
             {
+                uvs[iv] = new Vector2(ix, iz);
+
                 vertices[iv] = new Vector3(ix, 0.5f, iz);
                 for(int i = 0; i < roughness_worth.Length; i++)
                 {
@@ -36,6 +41,7 @@ public class WorldBehavior : MonoBehaviour
                         Mathf.PerlinNoise(ix / 100f * roughness_worth[i].x, iz / 100f * roughness_worth[i].x)
                         , roughness_worth[i].y);
                 }
+                textureColor[iv] = Color.Lerp(Color.black, Color.white, vertices[iv].y);
                 vertices[iv].y *= height;
                 groundHeight[ix, iz] = vertices[iv].y;
 
@@ -57,11 +63,16 @@ public class WorldBehavior : MonoBehaviour
         //Apply mesh
         MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
         MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
+        texture.SetPixels(textureColor);
+        texture.wrapMode = TextureWrapMode.Repeat;
+        texture.Apply();
+        //groundMaterial.mainTexture = texture;
         meshRenderer.material = groundMaterial;
         Mesh mesh = new Mesh();
         meshFilter.mesh = mesh;
         mesh.vertices = vertices;
         mesh.triangles = triangles;
+        //mesh.uv = uvs;
         mesh.RecalculateNormals();
     }
 }

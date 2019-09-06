@@ -18,6 +18,8 @@ public class BallBehavior : MonoBehaviour
     public Vector3 forces = Vector3.zero;
     [HideInInspector]
     public Vector3 speed = Vector3.zero;
+    [HideInInspector]
+    public Vector2 rotation = Vector2.zero;
     //Object
     public float mass = Mathf.PI * 4 / 3;
 
@@ -25,6 +27,16 @@ public class BallBehavior : MonoBehaviour
     {
         //Setup variables
         worldManagerScript = worldManager.GetComponent<WorldBehavior>();
+        //Create texture
+        Texture2D texture = new Texture2D(8, 8);
+        Color[] color = new Color[texture.width * texture.height];
+        for (int i = 0; i < color.Length; i++)
+        {
+            color[i] = Color.Lerp(Color.black, Color.white, Random.Range(0f, 0.5f));
+        }
+        texture.SetPixels(color);
+        texture.Apply();
+        GetComponent<MeshRenderer>().material.mainTexture = texture;
     }
 
     private void Update()
@@ -98,6 +110,7 @@ public class BallBehavior : MonoBehaviour
                     Vector3 deltaVector = newPos - closestTerrainPoint;
                     if (deltaVector.magnitude <= transform.localScale.x / 2)
                     {
+                        //send normal vector force against
                         Vector3 normalxz = new Vector3(
                             xz-Xz,
                             1,
@@ -192,8 +205,9 @@ public class BallBehavior : MonoBehaviour
             speed += deltaPos.normalized * speed.magnitude;
             if (Mathf.Abs(deltaPos.y) < transform.localScale.y * 0.45f) speed += tankObj.GetComponent<CannonBehavior>().speed;
         }
-        //Apply speed
+        //Apply speed and rotation
         transform.position += speed * Time.deltaTime;
+        transform.Rotate(new Vector3(speed.z, 0, -speed.x) * 90 * Time.deltaTime, Space.World);
         //Check if so low, we can just delete it
         if (transform.position.y < -16) Destroy(gameObject);
     }

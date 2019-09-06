@@ -54,6 +54,7 @@
      <Compile Include="Assets\Ball\BallBehavior.cs" />
      <Compile Include="Assets\Cannon\CannonBehavior.cs" />
      <Compile Include="Assets\World\WorldBehavior.cs" />
+     <None Include="Assets\World\Vertex Colored.shader" />
  <Reference Include="UnityEngine.CoreModule">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2017.4.31f1/Editor/Data/Managed/UnityEngine/UnityEngine.CoreModule.dll</HintPath>
  </Reference>
