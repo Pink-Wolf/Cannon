@@ -23,6 +23,7 @@ public class CannonBehavior : MonoBehaviour {
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         terrainScript = terrain.GetComponent<WorldBehavior>();
 
         transform.position = new Vector3(terrainScript.worldSize.x * 0.5f, 0, terrainScript.worldSize.y * 0.5f);
@@ -103,7 +104,7 @@ public class CannonBehavior : MonoBehaviour {
             BallBehavior objBehavior = obj.GetComponent<BallBehavior>();
             objBehavior.mass *= 8 * cannonBallSize * cannonBallSize * cannonBallSize;
             objBehavior.speed += speed;
-            objBehavior.forces += shootForce * cannonObject.transform.up;
+            objBehavior.forces += shootForce * cannonObject.transform.up * objBehavior.mass;
             objBehavior.tankBase = cannonPlate;
             objBehavior.tankObj = tankObject;
             objBehavior.tankHead = tankHead;

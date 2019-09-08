@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.43354276, g: 0.47028887, b: 0.50636184, a: 1}
+  m_IndirectSpecularColor: {r: 0.4335428, g: 0.47028893, b: 0.5063624, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -536,7 +536,7 @@ MonoBehaviour:
   rotationSpeed: 2.5
   moveSpeed: 10
   ballObject: {fileID: 1194573794201006, guid: 8f7ab3b69fc324a4c850d759a2d6f38f, type: 2}
-  shootForce: 150
+  shootForce: 5
   ballManager: {fileID: 491109911}
   tankObject: {fileID: 1069872037}
   cameraObject: {fileID: 118192364}
@@ -738,6 +738,11 @@ Prefab:
         type: 2}
       propertyPath: roughness_worth.Array.data[4].y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114206863262809226, guid: cf282798fc43b244fa560a3eca501b78,
+        type: 2}
+      propertyPath: minHeight
+      value: 0.35
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cf282798fc43b244fa560a3eca501b78, type: 2}

@@ -11,6 +11,8 @@ public class WorldBehavior : MonoBehaviour
     public float height = 8;
     public Vector2[] roughness_worth;
     public Material groundMaterial;
+    [Range(0,1)]
+    public float minHeight = 0.1f;
     //Values
     [HideInInspector]
     public float[,] groundHeight;
@@ -42,6 +44,7 @@ public class WorldBehavior : MonoBehaviour
                         , roughness_worth[i].y);
                 }
                 textureColor[iv] = Color.Lerp(Color.black, Color.white, vertices[iv].y);
+                vertices[iv].y = Mathf.Max(vertices[iv].y, minHeight);
                 vertices[iv].y *= height;
                 groundHeight[ix, iz] = vertices[iv].y;
 

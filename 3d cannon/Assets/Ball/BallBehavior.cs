@@ -170,7 +170,7 @@ public class BallBehavior : MonoBehaviour
             }
         }
         speed += sumNormal.normalized * speed.magnitude;
-        //Colliding
+        //Colliding with other balls
         foreach(Transform child in gameObject.transform.parent)
         {
             if (transform != child)
@@ -179,8 +179,9 @@ public class BallBehavior : MonoBehaviour
                 Vector3 deltaVector = child.transform.position - transform.position - speed * Time.deltaTime;
                 if (deltaVector.magnitude < radiusSum)
                 {
+                    child.GetComponent<BallBehavior>().forces += deltaVector.normalized * speed.magnitude;
                     speed -= deltaVector.normalized * speed.magnitude / mass;
-                    child.GetComponent<BallBehavior>().forces += deltaVector.normalized * speed.magnitude * mass;
+                    transform.position -= deltaVector * (radiusSum - deltaVector.magnitude);
                 }
             }
         }
@@ -207,7 +208,7 @@ public class BallBehavior : MonoBehaviour
         }
         //Apply speed and rotation
         transform.position += speed * Time.deltaTime;
-        transform.Rotate(new Vector3(speed.z, 0, -speed.x) * 90 * Time.deltaTime, Space.World);
+        transform.Rotate(new Vector3(speed.z, 0, -speed.x) * 22.5f * Time.deltaTime * Mathf.PI / Mathf.Pow(transform.localScale.x,2), Space.World);
         //Check if so low, we can just delete it
         if (transform.position.y < -16) Destroy(gameObject);
     }
